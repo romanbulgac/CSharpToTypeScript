@@ -1,5 +1,6 @@
 using CSharpToTypeScript.Core.Options;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CSharpToTypeScript.Core.Services
 {
@@ -13,7 +14,11 @@ namespace CSharpToTypeScript.Core.Services
         }
 
         public string ConvertToTypeScript(string code, CodeConversionOptions options)
-            => _syntaxTreeConverter.Convert(CSharpSyntaxTree.ParseText(code, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest)).GetCompilationUnitRoot())
-                .WriteTypeScript(options);
+        {
+            var syntaxTree = CSharpSyntaxTree.ParseText(code, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest));
+            var root = syntaxTree.GetCompilationUnitRoot();
+            var rewrittenRoot = (CompilationUnitSyntax)new UsingAliasRewriter().Visit(root);
+            return _syntaxTreeConverter.Convert(rewrittenRoot).WriteTypeScript(options);
+        }
     }
 }

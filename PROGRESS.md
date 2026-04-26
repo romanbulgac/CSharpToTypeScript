@@ -82,9 +82,10 @@ Last updated: 2026-04-26
 | #39 | Output file name begin with capital letter | Open | [ ] | [ ] | |
 | #38 | Summary tag support | Open | [ ] | [ ] | |
 | #37 | Some Chinese characters trigger error | Open | [ ] | [ ] | |
-| #34 | Option for no semicolons | Open | [ ] | [ ] | |
-| #33 | Preserve comments | Open | [ ] | [ ] | |
-| #31 | Support record types | Open | [ ] | [ ] | |
+| #34 | `using` aliases | 🟢 Passes | [ ] | [ ] | |
+| `DateOnly` / `TimeOnly` | `dateonly-timeonly` | 🟢 Passes | [ ] | [ ] | |
+| Tuple formatting | `tuple-and-enum` | 🟢 Passes | [ ] | [ ] | |
+| Output `enum` as values | `enum-as-values` | 🟢 Passes | [ ] | [ ] | |
 | #28 | TSX support | Open | [ ] | [ ] | |
 | #26 | Option to add custom type mapping | Open | [ ] | [ ] | |
 | #25 | Option to add suffix for interface names | Open | [ ] | [ ] | |

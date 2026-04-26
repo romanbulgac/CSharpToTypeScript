@@ -1,124 +1,55 @@
-using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using CSharpToTypeScript.Core.DependencyInjection;
+using CSharpToTypeScript.Core.Options;
+using CSharpToTypeScript.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-var serverDll = Path.Combine(
-    AppContext.BaseDirectory, "..", "..", "..",
-    "..", "..", "CSharpToTypeScript.Server", "bin", "Release", "net8.0", "publish",
-    "CSharpToTypeScript.Server.dll");
-
-if (!File.Exists(serverDll))
-{
-    var altPath = args.Length > 0 ? args[0] : null;
-    if (altPath != null && File.Exists(altPath))
-        serverDll = altPath;
-    else
-    {
-        Console.Error.WriteLine($"Server not found at {serverDll}");
-        Environment.Exit(1);
+var code = @"
+using MyString = System.String;
+using MyInt = System.Int32;
+namespace Contracts {
+    public class UserDto {
+        public MyString Name { get; set; }
+        public MyInt Age { get; set; }
     }
-}
+}";
 
-var fixtures = new (string name, string code, string expected)[]
+var root = CSharpSyntaxTree.ParseText(code, CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest)).GetCompilationUnitRoot();
+
+var rewriter = new UsingAliasRewriter();
+var rewritten = rewriter.Visit(root);
+
+Console.WriteLine(rewritten.ToFullString());
+Console.WriteLine("----");
+
+var sp = new ServiceCollection().AddCSharpToTypeScript().BuildServiceProvider();
+var converter = sp.GetRequiredService<ICodeConverter>();
+Console.WriteLine(converter.ConvertToTypeScript(rewritten.ToFullString(), new CodeConversionOptions(true, false)));
+
+
+public class UsingAliasRewriter : CSharpSyntaxRewriter
 {
-    ("record-with-body",
-     File.ReadAllText(FindFixture("record-with-body", "input.cs")),
-     File.ReadAllText(FindFixture("record-with-body", "expected.ts"))),
-    ("required-keyword",
-     File.ReadAllText(FindFixture("required-keyword", "input.cs")),
-     File.ReadAllText(FindFixture("required-keyword", "expected.ts"))),
-    ("tuple-and-enum",
-     File.ReadAllText(FindFixture("tuple-and-enum", "input.cs")),
-     File.ReadAllText(FindFixture("tuple-and-enum", "expected.ts"))),
-};
+    private readonly Dictionary<string, TypeSyntax> _aliases = new();
 
-var jsonOpts = new JsonSerializerOptions
-{
-    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-    Converters = { new JsonStringEnumConverter() }
-};
-
-foreach (var (name, code, expected) in fixtures)
-{
-    Console.WriteLine($"=== {name} ===");
-
-    var psi = new ProcessStartInfo("dotnet", serverDll)
+    public override SyntaxNode VisitUsingDirective(UsingDirectiveSyntax node)
     {
-        UseShellExecute = false,
-        RedirectStandardInput = true,
-        RedirectStandardOutput = true,
-        RedirectStandardError = true
-    };
-
-    using var proc = Process.Start(psi)!;
-
-    var input = new
-    {
-        code,
-        useTabs = false,
-        tabSize = 4,
-        export = true,
-        convertDatesTo = "string",
-        convertNullablesTo = "null",
-        toCamelCase = true,
-        removeInterfacePrefix = true,
-        generateImports = false,
-        useKebabCase = false,
-        appendModelSuffix = false,
-        quotationMark = "double",
-        appendNewLine = false
-    };
-
-    var line = JsonSerializer.Serialize(input, jsonOpts);
-    proc.StandardInput.WriteLine(line);
-    proc.StandardInput.Flush();
-
-    var response = proc.StandardOutput.ReadLine();
-    proc.StandardInput.WriteLine("EXIT");
-    proc.StandardInput.Close();
-    proc.WaitForExit(5000);
-
-    if (response == null)
-    {
-        Console.WriteLine("  NO RESPONSE FROM SERVER");
-        Console.WriteLine($"  STDERR: {proc.StandardError.ReadToEnd()}");
-        continue;
+        if (node.Alias != null)
+        {
+            _aliases[node.Alias.Name.Identifier.ValueText] = node.Name;
+        }
+        return node; // Don't traverse inside using directive!
     }
 
-    using var doc = JsonDocument.Parse(response);
-    var root = doc.RootElement;
-    var succeeded = root.GetProperty("succeeded").GetBoolean();
-    var convertedCode = root.GetProperty("convertedCode").GetString() ?? "";
-    var errorMessage = root.TryGetProperty("errorMessage", out var em) ? em.GetString() : null;
-
-    Console.WriteLine($"  succeeded: {succeeded}");
-    if (!succeeded) Console.WriteLine($"  error: {errorMessage}");
-
-    var normalActual = convertedCode.Replace("\r\n", "\n").Trim();
-    var normalExpected = expected.Replace("\r\n", "\n").Trim();
-
-    if (normalActual == normalExpected)
-        Console.WriteLine("  MATCH ✔");
-    else
+    public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
     {
-        Console.WriteLine("  MISMATCH ✘");
-        Console.WriteLine($"  ACTUAL  : {JsonSerializer.Serialize(normalActual)}");
-        Console.WriteLine($"  EXPECTED: {JsonSerializer.Serialize(normalExpected)}");
+        if (_aliases.TryGetValue(node.Identifier.ValueText, out var typeSyntax))
+        {
+            return typeSyntax.WithTriviaFrom(node);
+        }
+        return base.VisitIdentifierName(node);
     }
-}
-
-string FindFixture(string name, string file)
-{
-    var dir = Path.Combine(
-        AppContext.BaseDirectory, "..", "..", "..", "..", "..", "..", "..",
-        "src", "test", "fixtures", "e2e", name);
-    if (!Directory.Exists(dir))
-    {
-        dir = Path.GetFullPath(Path.Combine(
-            Environment.CurrentDirectory, "src", "test", "fixtures", "e2e", name));
-    }
-    var path = Path.Combine(dir, file);
-    if (!File.Exists(path))
-        throw new FileNotFoundException($"Fixture not found: {path}");
-    return path;
 }

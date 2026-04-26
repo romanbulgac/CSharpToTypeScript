@@ -11,7 +11,7 @@ namespace CSharpToTypeScript.Core.Services.TypeConversionHandlers
 
         protected override IEnumerable<string> ConvertibleFromIdentified => new[]
         {
-            nameof(DateTime), nameof(DateTimeOffset)
+            nameof(DateTime), nameof(DateTimeOffset), "DateOnly", "TimeOnly"
         };
     }
 }

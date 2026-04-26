@@ -13,8 +13,33 @@ namespace CSharpToTypeScript.Core.Services
                 members: ConvertEnumMembers(@enum.Members));
 
         private IEnumerable<EnumMemberNode> ConvertEnumMembers(IEnumerable<EnumMemberDeclarationSyntax> members)
-          => members.Select(m => new EnumMemberNode(
-                name: m.Identifier.ValueText,
-                value: m.EqualsValue?.Value.ToString()));
+        {
+            var result = new List<EnumMemberNode>();
+            int? nextValue = 0;
+            foreach (var m in members)
+            {
+                string value;
+                if (m.EqualsValue != null)
+                {
+                    value = m.EqualsValue.Value.ToString();
+                    if (int.TryParse(value, out int parsed))
+                    {
+                        nextValue = parsed + 1;
+                    }
+                    else
+                    {
+                        nextValue = null;
+                    }
+                }
+                else
+                {
+                    value = nextValue?.ToString();
+                    if (nextValue.HasValue) nextValue++;
+                }
+
+                result.Add(new EnumMemberNode(m.Identifier.ValueText, value));
+            }
+            return result;
+        }
     }
 }
