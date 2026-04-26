@@ -19,11 +19,12 @@ namespace CSharpToTypeScript.Server.DTOs
         public QuotationMark QuotationMark { get; set; }
         public bool AppendNewLine { get; set; }
         public OutputType OutputType { get; set; }
+        public bool UseOriginalNameAsComment { get; set; }
 
         public CodeConversionOptions MapToCodeConversionOptions()
             => new CodeConversionOptions(Export, UseTabs, TabSize,
                 ConvertDatesTo, ConvertNullablesTo, ToCamelCase, RemoveInterfacePrefix,
                 GenerateImports ? ImportGenerationMode.Simple : ImportGenerationMode.None,
-                UseKebabCase, AppendModelSuffix, QuotationMark, AppendNewLine, false, false, OutputType);
+                UseKebabCase, AppendModelSuffix, QuotationMark, AppendNewLine, false, false, OutputType, UseOriginalNameAsComment);
     }
 }

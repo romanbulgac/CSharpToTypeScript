@@ -11,6 +11,7 @@ export interface Configuration {
     convertDatesTo: string;
     convertNullablesTo: string;
     toCamelCase: boolean;
+    useOriginalNameAsComment: boolean;
     removeInterfacePrefix: boolean;
     generateImports: boolean;
     useKebabCase: boolean;

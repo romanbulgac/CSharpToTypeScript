@@ -138,6 +138,11 @@
 						],
 						"description": "Sets output type for nullables"
 					},
+					"csharpToTypeScript.useOriginalNameAsComment": {
+						"type": "boolean",
+						"default": false,
+						"description": "Output the original C# variable name as a JSDoc comment."
+					},
 					"csharpToTypeScript.toCamelCase": {
 						"type": "boolean",
 						"default": true,

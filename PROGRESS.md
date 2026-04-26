@@ -91,7 +91,7 @@ Last updated: 2026-04-26
 | #25 | Option to add suffix for interface names | Open | [ ] | [ ] | |
 | #24 | Nullable for non-primitive fields | Open | [ ] | [ ] | |
 | #19 | Support dotnet 5 | Open | [x] | [x] | Migrated further to net8 |
-| #13 | Using variable name as TypeScript comment | Open | [ ] | [ ] | |
+| #13 | Using variable name as TypeScript comment | 🟢 Passes | [x] | [x] | |
 | #5 | Generate one class/interface/enum per file | Open | [ ] | [ ] | |
 
 ## Session Log

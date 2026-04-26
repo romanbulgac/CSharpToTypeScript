@@ -12,6 +12,7 @@ type ConversionSettings = Partial<{
     convertDatesTo: 'string' | 'date' | 'union';
     convertNullablesTo: 'null' | 'undefined';
     toCamelCase: boolean;
+    useOriginalNameAsComment: boolean;
     removeInterfacePrefix: boolean;
     generateImports: boolean;
     useKebabCase: boolean;
@@ -45,6 +46,7 @@ interface ServerInput {
     convertDatesTo: 'string' | 'date' | 'union';
     convertNullablesTo: 'null' | 'undefined';
     toCamelCase: boolean;
+    useOriginalNameAsComment: boolean;
     removeInterfacePrefix: boolean;
     generateImports: boolean;
     useKebabCase: boolean;
@@ -131,6 +133,7 @@ function buildServerInput(code: string, fileName: string | undefined, settings: 
         convertDatesTo: 'string',
         convertNullablesTo: 'null',
         toCamelCase: true,
+        useOriginalNameAsComment: false,
         removeInterfacePrefix: true,
         generateImports: false,
         useKebabCase: false,

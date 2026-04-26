@@ -184,6 +184,7 @@ function convert(code: string, fileName?: string) {
             convertDatesTo: allowedOrDefault(configuration.convertDatesTo, dateOutputTypes),
             convertNullablesTo: allowedOrDefault(configuration.convertNullablesTo, nullableOutputTypes),
             toCamelCase: !!configuration.toCamelCase,
+            useOriginalNameAsComment: !!configuration.useOriginalNameAsComment,
             removeInterfacePrefix: !!configuration.removeInterfacePrefix,
             generateImports: !!configuration.generateImports,
             useKebabCase: !!configuration.useKebabCase,
