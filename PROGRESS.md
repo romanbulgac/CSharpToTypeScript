@@ -56,27 +56,27 @@ Last updated: 2026-04-26
 | Convert selected code fragment | [x] | src/CSharpToTypeScript.VSCodeExtension/src/test/suite/extension.test.ts | Existing command behavior |
 | Convert clipboard content | [x] | src/CSharpToTypeScript.VSCodeExtension/src/test/suite/extension.test.ts | Existing command behavior |
 | Convert C# file to TS file | [x] | src/CSharpToTypeScript.VSCodeExtension/src/test/suite/extension.test.ts | Existing command behavior |
-| Primitive type mapping matrix | [ ] | TBD | Add fixture-based assertions |
-| Nullable mapping (null vs undefined mode) | [ ] | TBD | Add config-aware tests |
-| Date mapping (string/date/union) | [ ] | TBD | Add config-aware tests |
-| Collection and dictionary mapping | [ ] | TBD | Add List/Array/Dictionary cases |
-| Tuple mapping | [ ] | TBD | Add tuple and System.Tuple coverage |
-| Enum conversion | [ ] | TBD | Add numeric and edge cases |
-| JSON attributes mapping | [ ] | TBD | JsonPropertyName/JsonProperty/JsonIgnore |
-| New C# syntax compatibility (required/record) | [ ] | TBD | Regression-focused tests |
+| Primitive type mapping matrix | [x] | `primitive-and-nullable`, `system-qualified-types` | Add fixture-based assertions |
+| Nullable mapping (null vs undefined mode) | [x] | `nullable-and-date-union` | Add config-aware tests |
+| Date mapping (string/date/union) | [x] | `dateonly-timeonly`, `nullable-and-date-union` | Add config-aware tests |
+| Collection and dictionary mapping | [x] | `collections-and-dictionary` | Add List/Array/Dictionary cases |
+| Tuple mapping | [x] | `tuple-and-enum` | Add tuple and System.Tuple coverage |
+| Enum conversion | [x] | `enum-as-values` | Add numeric and edge cases |
+| JSON attributes mapping | [x] | `json-attributes` | JsonPropertyName/JsonProperty/JsonIgnore |
+| New C# syntax compatibility (required/record) | [x] | `required-keyword`, `record-with-body` | Regression-focused tests |
 
 ## Upstream Open Issues Tracker (Imported)
 
 | Issue | Title | Status | Test Added | Fix Status | Notes |
 |---|---|---|---|---|---|
-| #66 | Const strings are not converted | Open | [ ] | [ ] | |
+| #66 | Const strings are not converted | 🟢 Passes | [x] | [x] | Outputs as literal types |
 | #65 | Is there an option to enable convert methods? | Open | [ ] | [ ] | |
 | #64 | String enums for the command line interface | Open | [ ] | [ ] | |
-| #63 | Fixed string to constant | Open | [ ] | [ ] | |
+| #63 | Fixed string to constant | 🟢 Passes | [x] | [x] | Outputs as literal types |
 | #62 | Output type "type" instead of interface | Open | [ ] | [ ] | |
-| #58 | Required keyword in property declarations fails | Open | [ ] | [ ] | |
-| #49 | Property Name Not Match CamelCase | Open | [ ] | [ ] | |
-| #48 | DateOnly not converting to string | Open | [ ] | [ ] | |
+| #58 | Required keyword in property declarations fails | 🟢 Passes | [x] | [x] | Fixed previously via C# 12 Roslyn upgrade |
+| #49 | Property Name Not Match CamelCase | 🟢 Passes | [x] | [x] | Full acronym support using standard logic |
+| #48 | DateOnly not converting to string | 🟢 Passes | [x] | [x] | Fixed previously |
 | #45 | CLI tool improperly recognizing directories | Open | [ ] | [ ] | Out of extension scope unless shared core behavior |
 | #44 | Multiple directories/files support | Open | [ ] | [ ] | Out of extension scope unless shared core behavior |
 | #39 | Output file name begin with capital letter | Open | [ ] | [ ] | |

@@ -26,7 +26,7 @@ namespace CSharpToTypeScript.Core.Services
                 fields: type.ChildNodes()
                     .SelectMany(node => node switch
                     {
-                        PropertyDeclarationSyntax property when IsSerializable(property, type) => new[] { ConvertProperty(property) },
+                        PropertyDeclarationSyntax property when IsSerializable(property, type) => new[] { ConvertProperty(property, type) },
                         FieldDeclarationSyntax field when IsSerializable(field) => ConvertField(field),
                         _ => Enumerable.Empty<FieldNode>()
                     }),
@@ -38,18 +38,63 @@ namespace CSharpToTypeScript.Core.Services
                     type),
                 fromInterface: type is InterfaceDeclarationSyntax);
 
-        private FieldNode ConvertProperty(PropertyDeclarationSyntax property)
-            => new FieldNode(
+        private FieldNode ConvertProperty(PropertyDeclarationSyntax property, TypeDeclarationSyntax containingType)
+        {
+            var literalValue = GetLiteralValue(property, containingType);
+            var typeNode = literalValue != null 
+                ? new StringLiteralNode(literalValue) 
+                : _typeConverter.Handle(property.Type);
+
+            return new FieldNode(
                 name: property.Identifier.ValueText,
-                type: _typeConverter.Handle(property.Type),
+                type: typeNode,
                 jsonPropertyName: GetJsonPropertyName(property));
+        }
+
+        private string GetLiteralValue(PropertyDeclarationSyntax property, TypeDeclarationSyntax containingType)
+        {
+            var expression = property.Initializer?.Value ?? property.ExpressionBody?.Expression;
+            if (expression is LiteralExpressionSyntax literal && literal.IsKind(SyntaxKind.StringLiteralExpression))
+            {
+                return literal.Token.Text;
+            }
+            if (expression is IdentifierNameSyntax identifier)
+            {
+                var field = containingType.Members.OfType<FieldDeclarationSyntax>()
+                    .SelectMany(f => f.Declaration.Variables)
+                    .FirstOrDefault(v => v.Identifier.ValueText == identifier.Identifier.ValueText);
+                    
+                if (field?.Initializer?.Value is LiteralExpressionSyntax fieldLiteral && fieldLiteral.IsKind(SyntaxKind.StringLiteralExpression))
+                {
+                    return fieldLiteral.Token.Text;
+                }
+            }
+            return null;
+        }
 
         private IEnumerable<FieldNode> ConvertField(FieldDeclarationSyntax field)
-           => field.Declaration.Variables.Select(v => new FieldNode(
-                name: v.Identifier.ValueText,
-                type: _typeConverter.Handle(field.Declaration.Type),
-                jsonPropertyName: GetJsonPropertyName(field)))
-            .Where(f => !string.IsNullOrWhiteSpace(f.Name));
+           => field.Declaration.Variables.Select(v => 
+           {
+               var literalValue = GetLiteralValue(v);
+               var typeNode = literalValue != null
+                   ? new StringLiteralNode(literalValue)
+                   : _typeConverter.Handle(field.Declaration.Type);
+
+               return new FieldNode(
+                   name: v.Identifier.ValueText,
+                   type: typeNode,
+                   jsonPropertyName: GetJsonPropertyName(field));
+           })
+           .Where(f => !string.IsNullOrWhiteSpace(f.Name));
+
+        private string GetLiteralValue(VariableDeclaratorSyntax variable)
+        {
+            if (variable.Initializer?.Value is LiteralExpressionSyntax literal && literal.IsKind(SyntaxKind.StringLiteralExpression))
+            {
+                return literal.Token.Text;
+            }
+            return null;
+        }
 
         private string GetJsonPropertyName(MemberDeclarationSyntax member)
         {
