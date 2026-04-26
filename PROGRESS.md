@@ -89,10 +89,13 @@ Last updated: 2026-04-26
 | #28 | TSX support | Open | [ ] | [ ] | |
 | #26 | Option to add custom type mapping | Open | [ ] | [ ] | |
 | #25 | Option to add suffix for interface names | Open | [ ] | [ ] | |
-| #24 | Nullable for non-primitive fields | Open | [ ] | [ ] | |
+| #24 | Nullable for non-primitive fields | 🟢 Passes | [x] | [x] | `Address?` → `Address \| null` works via NullableConverter |
 | #19 | Support dotnet 5 | Open | [x] | [x] | Migrated further to net8 |
 | #13 | Using variable name as TypeScript comment | 🟢 Passes | [x] | [x] | |
 | #5 | Generate one class/interface/enum per file | 🟢 Passes | [x] | [x] | Implemented via exportOneFilePerType |
+| Records | Record primary constructors | 🟢 Passes | [x] | [x] | `record Person(string Name, int Age)` → TS properties |
+| Validation | Validation attributes as JSDoc | 🟢 Passes | [x] | [x] | `[Required]`, `[Range]`, `[EmailAddress]` etc. → JSDoc tags |
+| Nullable Refs | Nullable reference types | 🟢 Passes | [x] | [x] | `string?`, `Address?`, `List<T>?` → `| null` |
 
 ## Session Log
 

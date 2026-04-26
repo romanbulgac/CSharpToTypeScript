@@ -23,13 +23,7 @@ namespace CSharpToTypeScript.Core.Services
         public RootTypeNode Convert(TypeDeclarationSyntax type)
             => new RootTypeNode(
                 name: type.Identifier.ValueText,
-                fields: type.ChildNodes()
-                    .SelectMany(node => node switch
-                    {
-                        PropertyDeclarationSyntax property when IsSerializable(property, type) => new[] { ConvertProperty(property, type) },
-                        FieldDeclarationSyntax field when IsSerializable(field) => ConvertField(field),
-                        _ => Enumerable.Empty<FieldNode>()
-                    }),
+                fields: GetAllFields(type),
                 genericTypeParameters: type.TypeParameterList?.Parameters
                     .Select(p => p.Identifier.ValueText)
                     .Where(p => !string.IsNullOrWhiteSpace(p)) ?? Enumerable.Empty<string>(),
@@ -39,6 +33,41 @@ namespace CSharpToTypeScript.Core.Services
                 fromInterface: type is InterfaceDeclarationSyntax,
                 documentation: DocumentationHelper.GetSummary(type));
 
+        private IEnumerable<FieldNode> GetAllFields(TypeDeclarationSyntax type)
+        {
+            var bodyFields = type.ChildNodes()
+                .SelectMany(node => node switch
+                {
+                    PropertyDeclarationSyntax property when IsSerializable(property, type) => new[] { ConvertProperty(property, type) },
+                    FieldDeclarationSyntax field when IsSerializable(field) => ConvertField(field),
+                    _ => Enumerable.Empty<FieldNode>()
+                })
+                .ToList();
+
+            var bodyFieldNames = new HashSet<string>(bodyFields.Select(f => f.Name), System.StringComparer.OrdinalIgnoreCase);
+
+            if (type is RecordDeclarationSyntax record && record.ParameterList != null)
+            {
+                var paramFields = record.ParameterList.Parameters
+                    .Where(p => !bodyFieldNames.Contains(p.Identifier.ValueText))
+                    .Select(p => ConvertRecordParameter(p))
+                    .ToList();
+
+                return paramFields.Concat(bodyFields);
+            }
+
+            return bodyFields;
+        }
+
+        private FieldNode ConvertRecordParameter(ParameterSyntax parameter)
+        {
+            var typeNode = _typeConverter.Handle(parameter.Type);
+            return new FieldNode(
+                name: parameter.Identifier.ValueText,
+                type: typeNode,
+                documentation: DocumentationHelper.GetSummary(parameter));
+        }
+
         private FieldNode ConvertProperty(PropertyDeclarationSyntax property, TypeDeclarationSyntax containingType)
         {
             var literalValue = GetLiteralValue(property, containingType);
@@ -46,11 +75,15 @@ namespace CSharpToTypeScript.Core.Services
                 ? new StringLiteralNode(literalValue) 
                 : _typeConverter.Handle(property.Type);
 
+            var summaryLines = DocumentationHelper.GetSummary(property);
+            var validationLines = ExtractValidationDocLines(property);
+            var allDocLines = summaryLines.Concat(validationLines);
+
             return new FieldNode(
                 name: property.Identifier.ValueText,
                 type: typeNode,
                 jsonPropertyName: GetJsonPropertyName(property),
-                documentation: DocumentationHelper.GetSummary(property));
+                documentation: allDocLines);
         }
 
         private string GetLiteralValue(PropertyDeclarationSyntax property, TypeDeclarationSyntax containingType)
@@ -82,11 +115,15 @@ namespace CSharpToTypeScript.Core.Services
                    ? new StringLiteralNode(literalValue)
                    : _typeConverter.Handle(field.Declaration.Type);
 
+               var summaryLines = DocumentationHelper.GetSummary(field);
+               var validationLines = ExtractValidationDocLines(field);
+               var allDocLines = summaryLines.Concat(validationLines);
+
                return new FieldNode(
                    name: v.Identifier.ValueText,
                    type: typeNode,
                    jsonPropertyName: GetJsonPropertyName(field),
-                   documentation: DocumentationHelper.GetSummary(field));
+                   documentation: allDocLines);
            })
            .Where(f => !string.IsNullOrWhiteSpace(f.Name));
 
@@ -194,5 +231,81 @@ namespace CSharpToTypeScript.Core.Services
                 QualifiedNameSyntax qualified => qualified.Right.Identifier.ValueText,
                 _ => attribute.Name.ToString()
             };
+
+        private IEnumerable<string> ExtractValidationDocLines(MemberDeclarationSyntax member)
+        {
+            var lines = new List<string>();
+
+            foreach (var attribute in member.AttributeLists.SelectMany(a => a.Attributes))
+            {
+                var name = GetAttributeName(attribute);
+                var argList = attribute.ArgumentList?.Arguments;
+
+                switch (name)
+                {
+                    case Constants.Attributes.Required:
+                        lines.Add("@required");
+                        break;
+
+                    case Constants.Attributes.MaxLength:
+                        if (argList?.Count > 0)
+                            lines.Add($"@maxLength {GetArgumentValue(argList.Value[0])}");
+                        break;
+
+                    case Constants.Attributes.MinLength:
+                        if (argList?.Count > 0)
+                            lines.Add($"@minLength {GetArgumentValue(argList.Value[0])}");
+                        break;
+
+                    case Constants.Attributes.StringLength:
+                        if (argList?.Count > 0)
+                        {
+                            lines.Add($"@maxLength {GetArgumentValue(argList.Value[0])}");
+                            var minArg = argList.Value.FirstOrDefault(a =>
+                                a.NameEquals?.Name.Identifier.ValueText == "MinimumLength");
+                            if (minArg != null)
+                                lines.Add($"@minLength {GetArgumentValue(minArg)}");
+                        }
+                        break;
+
+                    case Constants.Attributes.Range:
+                        if (argList?.Count >= 2)
+                        {
+                            lines.Add($"@minimum {GetArgumentValue(argList.Value[0])}");
+                            lines.Add($"@maximum {GetArgumentValue(argList.Value[1])}");
+                        }
+                        break;
+
+                    case Constants.Attributes.EmailAddress:
+                        lines.Add("@format email");
+                        break;
+
+                    case Constants.Attributes.Phone:
+                        lines.Add("@format phone");
+                        break;
+
+                    case Constants.Attributes.Url:
+                        lines.Add("@format uri");
+                        break;
+
+                    case Constants.Attributes.RegularExpression:
+                        if (argList?.Count > 0)
+                        {
+                            var pattern = GetArgumentValue(argList.Value[0]);
+                            lines.Add($"@pattern {pattern}");
+                        }
+                        break;
+                }
+            }
+
+            return lines;
+        }
+
+        private string GetArgumentValue(AttributeArgumentSyntax argument)
+        {
+            if (argument.Expression is LiteralExpressionSyntax literal)
+                return literal.Token.ValueText;
+            return argument.Expression.ToString();
+        }
     }
 }
