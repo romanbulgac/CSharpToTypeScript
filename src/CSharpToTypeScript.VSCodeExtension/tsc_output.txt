@@ -1,0 +1,70 @@
+
+> csharp-to-typescript@1.12.1 compile
+> tsc -p ./
+
+src/extension.ts(1,21): error TS2591: Cannot find name 'child_process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/extension.ts(2,21): error TS2591: Cannot find name 'fs'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/extension.ts(3,23): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/extension.ts(4,27): error TS2591: Cannot find name 'readline'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/extension.ts(9,29): error TS2591: Cannot find name 'util'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/extension.ts(28,24): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/extension.ts(32,31): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/extension.ts(35,23): error TS7006: Parameter 'code' implicitly has an 'any' type.
+src/extension.ts(72,17): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/extension.ts(73,14): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/extension.ts(74,16): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/extension.ts(74,19): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/extension.ts(228,21): error TS2584: Cannot find name 'console'. Do you need to change your target library? Try changing the 'lib' compiler option to include 'dom'.
+src/extension.ts(280,32): error TS7006: Parameter 'outputLine' implicitly has an 'any' type.
+src/test/runTest.ts(1,21): error TS2591: Cannot find name 'os'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/runTest.ts(2,23): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/runTest.ts(10,55): error TS2304: Cannot find name '__dirname'.
+src/test/runTest.ts(14,49): error TS2304: Cannot find name '__dirname'.
+src/test/runTest.ts(24,9): error TS2584: Cannot find name 'console'. Do you need to change your target library? Try changing the 'lib' compiler option to include 'dom'.
+src/test/runTest.ts(25,9): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/e2e.fixtures.test.ts(1,25): error TS2591: Cannot find name 'assert'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/e2e.fixtures.test.ts(2,21): error TS2591: Cannot find name 'fs'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/e2e.fixtures.test.ts(3,21): error TS2591: Cannot find name 'os'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/e2e.fixtures.test.ts(4,23): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/e2e.fixtures.test.ts(37,36): error TS2304: Cannot find name '__dirname'.
+src/test/suite/e2e.fixtures.test.ts(44,17): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/test/suite/e2e.fixtures.test.ts(45,14): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/test/suite/e2e.fixtures.test.ts(46,16): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/test/suite/e2e.fixtures.test.ts(46,19): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/test/suite/e2e.fixtures.test.ts(48,26): error TS7006: Parameter 'fixtureName' implicitly has an 'any' type.
+src/test/suite/extension.test.ts(1,25): error TS2591: Cannot find name 'assert'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/extension.test.ts(2,21): error TS2591: Cannot find name 'fs'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/extension.test.ts(3,23): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/extension.test.ts(113,39): error TS2304: Cannot find name '__dirname'.
+src/test/suite/extension.test.ts(150,39): error TS2304: Cannot find name '__dirname'.
+src/test/suite/index.ts(1,23): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/index.ts(7,23): error TS2351: This expression is not constructable.
+  Type 'typeof Mocha' has no construct signatures.
+src/test/suite/index.ts(12,36): error TS2304: Cannot find name '__dirname'.
+src/test/suite/index.ts(22,23): error TS7006: Parameter 'failures' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(1,25): error TS2591: Cannot find name 'assert'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/server.e2e.test.ts(2,21): error TS2591: Cannot find name 'child_process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/server.e2e.test.ts(3,21): error TS2591: Cannot find name 'fs'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/server.e2e.test.ts(4,23): error TS2591: Cannot find name 'path'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/server.e2e.test.ts(5,27): error TS2591: Cannot find name 'readline'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+src/test/suite/server.e2e.test.ts(68,36): error TS2304: Cannot find name '__dirname'.
+src/test/suite/server.e2e.test.ts(75,17): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(76,14): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(77,16): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(77,19): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(79,26): error TS7006: Parameter 'fixtureName' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(115,28): error TS18048: 'output.convertedFiles' is possibly 'undefined'.
+src/test/suite/server.e2e.test.ts(117,26): error TS18048: 'output.convertedFiles' is possibly 'undefined'.
+src/test/suite/server.e2e.test.ts(118,26): error TS18048: 'output.convertedFiles' is possibly 'undefined'.
+src/test/suite/server.e2e.test.ts(123,19): error TS18048: 'userFile' is possibly 'undefined'.
+src/test/suite/server.e2e.test.ts(124,19): error TS18048: 'roleFile' is possibly 'undefined'.
+src/test/suite/server.e2e.test.ts(182,25): error TS2304: Cannot find name 'setTimeout'.
+src/test/suite/server.e2e.test.ts(187,13): error TS2304: Cannot find name 'clearTimeout'.
+src/test/suite/server.e2e.test.ts(230,35): error TS7006: Parameter 'data' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(234,28): error TS7006: Parameter 'error' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(238,27): error TS7006: Parameter 'code' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(244,25): error TS7006: Parameter 'line' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(264,17): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(265,14): error TS7006: Parameter 'entry' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(266,16): error TS7006: Parameter 'a' implicitly has an 'any' type.
+src/test/suite/server.e2e.test.ts(266,19): error TS7006: Parameter 'b' implicitly has an 'any' type.
