@@ -6,7 +6,7 @@ export enum ProcessingState {
 }
 
 export interface TupleDto {
-    pair: { Id: number; Name: string; };
-    legacyTuple: { Item1: string; Item2: number; Item3: boolean; };
+    pair: { id: number; name: string; };
+    legacyTuple: { item1: string; item2: number; item3: boolean; };
     state: ProcessingState;
 }
