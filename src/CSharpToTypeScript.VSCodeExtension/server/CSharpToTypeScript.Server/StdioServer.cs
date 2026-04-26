@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using CSharpToTypeScript.Core.Services;
@@ -40,12 +41,27 @@ namespace CSharpToTypeScript.Server
 
                     var codeConversionOptions = input.MapToCodeConversionOptions();
 
-                    var convertedCode = _codeConverter.ConvertToTypeScript(input.Code, codeConversionOptions);
-                    var convertedFileName = string.IsNullOrWhiteSpace(input.FileName)
-                        ? null
-                        : _fileNameConverter.ConvertToTypeScript(input.FileName, codeConversionOptions);
+                    var fileNodes = _codeConverter.ConvertToTypeScript(input.Code, codeConversionOptions).ToList();
 
-                    output = new Output { Succeeded = true, ConvertedCode = convertedCode, ConvertedFileName = convertedFileName };
+                    if (codeConversionOptions.ExportOneFilePerType)
+                    {
+                        var convertedFiles = fileNodes.Select(f => new ConvertedFile
+                        {
+                            ConvertedCode = f.Code,
+                            ConvertedFileName = _fileNameConverter.ConvertToTypeScript(f.Name, codeConversionOptions)
+                        }).ToList();
+
+                        output = new Output { Succeeded = true, ConvertedFiles = convertedFiles };
+                    }
+                    else
+                    {
+                        var convertedCode = fileNodes.Single().Code;
+                        var convertedFileName = string.IsNullOrWhiteSpace(input.FileName)
+                            ? null
+                            : _fileNameConverter.ConvertToTypeScript(input.FileName, codeConversionOptions);
+
+                        output = new Output { Succeeded = true, ConvertedCode = convertedCode, ConvertedFileName = convertedFileName };
+                    }
                 }
                 catch (Exception ex)
                 {

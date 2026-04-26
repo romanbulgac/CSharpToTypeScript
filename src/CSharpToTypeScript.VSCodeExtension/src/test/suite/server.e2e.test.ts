@@ -13,6 +13,7 @@ type ConversionSettings = Partial<{
     convertNullablesTo: 'null' | 'undefined';
     toCamelCase: boolean;
     useOriginalNameAsComment: boolean;
+    exportOneFilePerType: boolean;
     removeInterfacePrefix: boolean;
     generateImports: boolean;
     useKebabCase: boolean;
@@ -47,6 +48,7 @@ interface ServerInput {
     convertNullablesTo: 'null' | 'undefined';
     toCamelCase: boolean;
     useOriginalNameAsComment: boolean;
+    exportOneFilePerType: boolean;
     removeInterfacePrefix: boolean;
     generateImports: boolean;
     useKebabCase: boolean;
@@ -58,6 +60,7 @@ interface ServerInput {
 interface ServerOutput {
     convertedCode?: string;
     convertedFileName?: string;
+    convertedFiles?: { convertedCode: string; convertedFileName: string }[];
     succeeded: boolean;
     errorMessage?: string;
 }
@@ -97,6 +100,29 @@ suite('Server E2E Fixtures', function () {
             }
         });
     });
+
+    test('Export One File Per Type', async () => {
+        const inputCode = `
+            public class User { public int Id { get; set; } }
+            public enum Role { Admin, User }
+        `;
+        
+        const serverInput = buildServerInput(inputCode, undefined, { exportOneFilePerType: true });
+        const output = await convertWithServer(serverInput);
+        
+        assert.strictEqual(output.succeeded, true, output.errorMessage);
+        assert.ok(output.convertedFiles);
+        assert.strictEqual(output.convertedFiles.length, 2);
+        
+        const userFile = output.convertedFiles.find(f => f.convertedFileName === 'user.ts');
+        const roleFile = output.convertedFiles.find(f => f.convertedFileName === 'role.ts');
+        
+        assert.ok(userFile, 'Should generate user.ts');
+        assert.ok(roleFile, 'Should generate role.ts');
+        
+        assert.ok(userFile.convertedCode.includes('export interface User'));
+        assert.ok(roleFile.convertedCode.includes('export enum Role'));
+    });
 });
 
 function loadFixture(name: string): Fixture {
@@ -134,6 +160,7 @@ function buildServerInput(code: string, fileName: string | undefined, settings: 
         convertNullablesTo: 'null',
         toCamelCase: true,
         useOriginalNameAsComment: false,
+        exportOneFilePerType: false,
         removeInterfacePrefix: true,
         generateImports: false,
         useKebabCase: false,

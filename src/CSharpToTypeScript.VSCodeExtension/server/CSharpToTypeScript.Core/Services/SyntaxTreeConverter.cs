@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CSharpToTypeScript.Core.Models;
+using CSharpToTypeScript.Core.Options;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -18,8 +19,17 @@ namespace CSharpToTypeScript.Core.Services
             _rootEnumConverter = rootEnumConverter;
         }
 
-        public FileNode Convert(CompilationUnitSyntax root)
-            => new FileNode(ConvertRootNodes(root));
+        public IEnumerable<FileNode> Convert(CompilationUnitSyntax root, CodeConversionOptions options)
+        {
+            var rootNodes = ConvertRootNodes(root);
+            
+            if (options.ExportOneFilePerType)
+            {
+                return rootNodes.Select(node => new FileNode(new[] { node }));
+            }
+
+            return new[] { new FileNode(rootNodes) };
+        }
 
         private IEnumerable<RootNode> ConvertRootNodes(CompilationUnitSyntax root)
             => root.DescendantNodes()

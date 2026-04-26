@@ -54,6 +54,11 @@
 				"command": "csharpToTypeScript.csharpToTypeScriptToFile",
 				"title": "C# to TypeScript (To File)",
 				"enablement": "resourceLangId == csharp"
+			},
+			{
+				"command": "csharpToTypeScript.exportToTypeScript",
+				"title": "Export to TypeScript",
+				"enablement": "resourceExtname == .cs || explorerResourceIsFolder"
 			}
 		],
 		"keybindings": [
@@ -96,6 +101,11 @@
 				{
 					"command": "csharpToTypeScript.csharpToTypeScriptToFile",
 					"when": "resourceLangId == csharp",
+					"group": "7_modification"
+				},
+				{
+					"command": "csharpToTypeScript.exportToTypeScript",
+					"when": "resourceExtname == .cs || explorerResourceIsFolder",
 					"group": "7_modification"
 				}
 			]
@@ -142,6 +152,11 @@
 						"type": "boolean",
 						"default": false,
 						"description": "Output the original C# variable name as a JSDoc comment."
+					},
+					"csharpToTypeScript.exportOneFilePerType": {
+						"type": "boolean",
+						"default": true,
+						"description": "When using 'Export to TypeScript', generate one file per class/interface/enum."
 					},
 					"csharpToTypeScript.toCamelCase": {
 						"type": "boolean",

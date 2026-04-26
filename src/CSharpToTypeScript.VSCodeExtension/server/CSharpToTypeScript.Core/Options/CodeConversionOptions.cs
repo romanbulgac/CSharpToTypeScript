@@ -7,7 +7,7 @@ namespace CSharpToTypeScript.Core.Options
             bool toCamelCase = true, bool removeInterfacePrefix = true, ImportGenerationMode importGenerationMode = ImportGenerationMode.None,
             bool useKebabCase = false, bool appendModelSuffix = false, QuotationMark quotationMark = QuotationMark.Double,
             bool appendNewLine = false, bool stringEnums = false, bool enumStringToCamelCase = false,
-            OutputType outputType = OutputType.Interface, bool useOriginalNameAsComment = false)
+            OutputType outputType = OutputType.Interface, bool useOriginalNameAsComment = false, bool exportOneFilePerType = false)
         : base(useKebabCase, appendModelSuffix, removeInterfacePrefix)
         {
             Export = export;
@@ -23,6 +23,7 @@ namespace CSharpToTypeScript.Core.Options
             EnumStringToCamelCase = enumStringToCamelCase;
             OutputType = outputType;
             UseOriginalNameAsComment = useOriginalNameAsComment;
+            ExportOneFilePerType = exportOneFilePerType;
         }
 
         public bool Export { get; set; }
@@ -38,5 +39,6 @@ namespace CSharpToTypeScript.Core.Options
         public bool EnumStringToCamelCase { get; set; }
         public OutputType OutputType { get; set; }
         public bool UseOriginalNameAsComment { get; set; }
+        public bool ExportOneFilePerType { get; set; }
     }
 }
