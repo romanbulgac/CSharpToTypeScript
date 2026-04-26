@@ -1,0 +1,5 @@
+{
+  "command": "toFile",
+  "sourceFileName": "IOrderDto.cs",
+  "expectedFileName": "order-dto.model.ts"
+}

@@ -1,0 +1,6 @@
+{
+  "generateImports": true,
+  "useKebabCase": true,
+  "appendModelSuffix": true,
+  "quotationMark": "single"
+}

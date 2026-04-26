@@ -10,7 +10,7 @@
 	"icon": "img/icon.png",
 	"version": "1.12.1",
 	"engines": {
-		"vscode": "^1.38.0"
+		"vscode": "^1.85.0"
 	},
 	"categories": [
 		"Other"
@@ -31,12 +31,6 @@
 		"Model",
 		"Keybindings",
 		"API"
-	],
-	"activationEvents": [
-		"onCommand:csharpToTypeScript.csharpToTypeScriptReplace",
-		"onCommand:csharpToTypeScript.csharpToTypeScriptToClipboard",
-		"onCommand:csharpToTypeScript.csharpToTypeScriptPasteAs",
-		"onCommand:csharpToTypeScript.csharpToTypeScriptToFile"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -182,17 +176,19 @@
 		"compile": "tsc -p ./",
 		"compile-server": "dotnet publish ./server/CSharpToTypeScript.Server/CSharpToTypeScript.Server.csproj -c Release",
 		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile"
+		"pretest": "npm run compile-server && npm run compile",
+		"test": "npm run test:server-e2e",
+		"test:server-e2e": "mocha --timeout 120000 out/test/suite/server.e2e.test.js",
+		"test:extension": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
-		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
-		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.38.0",
-		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
-		"tslint": "^5.12.1",
-		"typescript": "^3.7.2",
-		"vscode-test": "^1.0.2"
+		"@types/glob": "^8.1.0",
+		"@types/mocha": "^10.0.10",
+		"@types/node": "^20.17.30",
+		"@types/vscode": "^1.85.0",
+		"@vscode/test-electron": "^2.5.2",
+		"glob": "^7.2.3",
+		"mocha": "^10.8.2",
+		"typescript": "^5.6.3"
 	}
 }

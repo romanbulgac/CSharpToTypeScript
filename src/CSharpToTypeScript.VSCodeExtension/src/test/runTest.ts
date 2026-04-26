@@ -1,6 +1,7 @@
+import * as os from 'os';
 import * as path from 'path';
 
-import { runTests } from 'vscode-test';
+import { runTests } from '@vscode/test-electron';
 
 async function main() {
     try {
@@ -11,9 +12,14 @@ async function main() {
         // The path to test runner
         // Passed to --extensionTestsPath
         const extensionTestsPath = path.resolve(__dirname, './suite/index');
+        const userDataDir = path.join(os.tmpdir(), 'cs2ts-vscode-user-data');
 
         // Download VS Code, unzip it and run the integration test
-        await runTests({ extensionDevelopmentPath, extensionTestsPath });
+        await runTests({
+            extensionDevelopmentPath,
+            extensionTestsPath,
+            launchArgs: ['--user-data-dir', userDataDir]
+        });
     } catch (err) {
         console.error('Failed to run tests');
         process.exit(1);

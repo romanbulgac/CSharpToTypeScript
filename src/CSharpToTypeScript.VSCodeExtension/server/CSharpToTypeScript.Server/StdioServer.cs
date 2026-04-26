@@ -1,9 +1,8 @@
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using CSharpToTypeScript.Core.Services;
 using CSharpToTypeScript.Server.DTOs;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using Server.Services;
 
 namespace CSharpToTypeScript.Server
@@ -21,10 +20,11 @@ namespace CSharpToTypeScript.Server
             _fileNameConverter = fileNameConverter;
         }
 
-        private readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings
+        private readonly JsonSerializerOptions _serializerOptions = new JsonSerializerOptions
         {
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Converters = new[] { new StringEnumConverter() }
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
         };
 
         public void Handle()
@@ -35,7 +35,8 @@ namespace CSharpToTypeScript.Server
 
                 try
                 {
-                    var input = JsonConvert.DeserializeObject<Input>(inputLine, _serializerSettings);
+                    var input = JsonSerializer.Deserialize<Input>(inputLine, _serializerOptions)
+                        ?? throw new InvalidOperationException("Input payload cannot be null.");
 
                     var codeConversionOptions = input.MapToCodeConversionOptions();
 
@@ -51,7 +52,7 @@ namespace CSharpToTypeScript.Server
                     output = new Output { Succeeded = false, ErrorMessage = ex.Message };
                 }
 
-                var outputLine = JsonConvert.SerializeObject(output, _serializerSettings);
+                var outputLine = JsonSerializer.Serialize(output, _serializerOptions);
 
                 _stdio.WriteLine(outputLine);
             }

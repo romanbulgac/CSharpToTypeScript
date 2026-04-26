@@ -1,0 +1,4 @@
+{
+  "convertNullablesTo": "undefined",
+  "convertDatesTo": "union"
+}

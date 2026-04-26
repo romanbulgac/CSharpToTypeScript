@@ -10,4 +10,4 @@ vsc-extension-quickstart.md
 **/*.ts
 
 server/**
-!server/CSharpToTypeScript.Server/bin/Release/netcoreapp2.2/publish/**
+!server/CSharpToTypeScript.Server/bin/Release/**/publish/**

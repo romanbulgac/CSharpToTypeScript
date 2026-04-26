@@ -1,4 +1,5 @@
 import * as cp from 'child_process';
+import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 import * as vscode from 'vscode';
@@ -14,16 +15,21 @@ let executingCommand = false;
 
 export function activate(context: vscode.ExtensionContext) {
     let standardError = '';
-    serverRunning = true;
 
-    server = cp.spawn('dotnet', [context.asAbsolutePath(path.join(
-        'server', 'CSharpToTypeScript.Server', 'bin', 'Release', 'netcoreapp2.2', 'publish', 'CSharpToTypeScript.Server.dll'))]);
+    const serverPath = resolveServerPath(context);
+    if (!serverPath) {
+        vscode.window.showErrorMessage('"C# to TypeScript" server binary was not found. Run "npm run compile-server" and reload window.');
+        return;
+    }
+
+    serverRunning = true;
+    server = cp.spawn('dotnet', [serverPath]);
 
     server.on('error', err => {
         serverRunning = false;
         vscode.window.showErrorMessage(`"C# to TypeScript" server related error occurred: "${err.message}".`);
     });
-    server.stderr.on('data', data => {
+    server.stderr?.on('data', data => {
         standardError += data;
     });
     server.on('exit', code => {
@@ -31,7 +37,16 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showWarningMessage(`"C# to TypeScript" server shutdown with code: "${code}". Standard error: "${standardError}".`);
     });
 
-    rl = readline.createInterface(server.stdout, server.stdin);
+    if (!server.stdout || !server.stdin) {
+        serverRunning = false;
+        vscode.window.showErrorMessage('"C# to TypeScript" server streams are unavailable.');
+        return;
+    }
+
+    rl = readline.createInterface({
+        input: server.stdout,
+        output: server.stdin
+    });
 
     context.subscriptions.push(
         vscode.commands.registerCommand('csharpToTypeScript.csharpToTypeScriptReplace', replaceCommand),
@@ -41,9 +56,31 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-    if (serverRunning) {
+    if (serverRunning && server.stdin && server.stdin.writable) {
         server.stdin.write('EXIT\n');
     }
+}
+
+function resolveServerPath(context: vscode.ExtensionContext): string | undefined {
+    const releaseDirectory = context.asAbsolutePath(path.join('server', 'CSharpToTypeScript.Server', 'bin', 'Release'));
+    if (!fs.existsSync(releaseDirectory)) {
+        return undefined;
+    }
+
+    const frameworks = fs.readdirSync(releaseDirectory, { withFileTypes: true })
+        .filter(entry => entry.isDirectory())
+        .map(entry => entry.name)
+        .sort((a, b) => b.localeCompare(a, undefined, { numeric: true, sensitivity: 'base' }));
+
+    for (const framework of frameworks) {
+        const candidate = context.asAbsolutePath(path.join(
+            'server', 'CSharpToTypeScript.Server', 'bin', 'Release', framework, 'publish', 'CSharpToTypeScript.Server.dll'));
+        if (fs.existsSync(candidate)) {
+            return candidate;
+        }
+    }
+
+    return undefined;
 }
 
 async function replaceCommand() {
@@ -107,7 +144,7 @@ async function toFileCommand(uri?: vscode.Uri) {
 
         const document = await vscode.workspace.openTextDocument(uri);
         const code = document.getText();
-        const filePath = uri.path;
+        const filePath = uri.fsPath;
 
         const result = await convert(code, filePath);
 
@@ -157,18 +194,24 @@ function convert(code: string, fileName?: string) {
         const inputLine = JSON.stringify(input) + '\n';
 
         rl.question(inputLine, outputLine => {
-            const { convertedCode, convertedFileName, succeeded, errorMessage } = JSON.parse(outputLine) as Output;
+            try {
+                const { convertedCode, convertedFileName, succeeded, errorMessage } = JSON.parse(outputLine) as Output;
 
-            if (!succeeded) {
-                reject(new Error(`"C# to TypeScript" extension encountered an error while converting your code: "${errorMessage}".`));
-            } else {
-                resolve({
-                    convertedCode: convertedCode ?? '',
-                    convertedFileName
-                });
+                if (!succeeded) {
+                    reject(new Error(`"C# to TypeScript" extension encountered an error while converting your code: "${errorMessage}".`));
+                } else {
+                    resolve({
+                        convertedCode: convertedCode ?? '',
+                        convertedFileName
+                    });
+                }
             }
-
-            executingCommand = false;
+            catch (error) {
+                reject(error as Error);
+            }
+            finally {
+                executingCommand = false;
+            }
         });
     });
 }
