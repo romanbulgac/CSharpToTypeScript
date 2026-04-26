@@ -7,6 +7,7 @@ export interface Input extends Configuration {
 
 export interface Configuration {
     export: boolean;
+    outputType: string;
     convertDatesTo: string;
     convertNullablesTo: string;
     toCamelCase: boolean;
@@ -18,6 +19,7 @@ export interface Configuration {
     appendNewLine: boolean;
 }
 
+export const outputTypes = ['interface', 'class', 'type'];
 export const dateOutputTypes = ['string', 'date', 'union'];
 export const nullableOutputTypes = ['null', 'undefined'];
 export const quotationMarks = ['double', 'single'];

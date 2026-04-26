@@ -37,19 +37,25 @@ namespace CSharpToTypeScript.Core.Models
             context = context.Clone();
             context.GenericTypeParameters = GenericTypeParameters;
 
-            // keywords
-            return "export ".If(options.Export)
-                // type
-                + (!FromInterface && options.OutputType == OutputType.Class ? "class" : "interface") + " "
-                // name
+            string typeWord = options.OutputType == OutputType.Type ? "type" : (!FromInterface && options.OutputType == OutputType.Class ? "class" : "interface");
+
+            string declaration = "export ".If(options.Export)
+                + typeWord + " "
                 + Name.TransformIf(options.RemoveInterfacePrefix, StringUtilities.RemoveInterfacePrefix)
-                // generic type parameters
-                + ("<" + GenericTypeParameters.ToCommaSepratedList() + ">").If(GenericTypeParameters.Any())
-                // base types
+                + ("<" + GenericTypeParameters.ToCommaSepratedList() + ">").If(GenericTypeParameters.Any());
+
+            if (options.OutputType == OutputType.Type)
+            {
+                return declaration + " = "
+                    + (BaseTypes.Any() ? string.Join(" & ", BaseTypes.WriteTypeScript(options, context)) + " & " : "")
+                    + "{" + NewLine
+                    + Fields.WriteTypeScript(options, context).Indent(options.UseTabs, options.TabSize).LineByLine() + NewLine
+                    + "};";
+            }
+
+            return declaration
                 + (" extends " + BaseTypes.WriteTypeScript(options, context).ToCommaSepratedList()).If(BaseTypes.Any())
-                // body
                 + " {" + NewLine
-                // fields
                 + Fields.WriteTypeScript(options, context).Indent(options.UseTabs, options.TabSize).LineByLine() + NewLine
                 + "}";
         }

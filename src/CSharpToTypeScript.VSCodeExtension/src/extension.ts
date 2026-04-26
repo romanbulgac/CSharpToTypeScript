@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as readline from 'readline';
 import * as vscode from 'vscode';
-import { Input, dateOutputTypes, nullableOutputTypes, quotationMarks, Configuration } from './input';
+import { Input, dateOutputTypes, nullableOutputTypes, quotationMarks, Configuration, outputTypes } from './input';
 import { Output } from './output';
 import { allowedOrDefault, fullRange, textFromActiveDocument } from './utilities';
 import { TextEncoder } from 'util';
@@ -180,6 +180,7 @@ function convert(code: string, fileName?: string) {
             useTabs: !(vscode.window.activeTextEditor?.options.insertSpaces ?? true),
             tabSize: vscode.window.activeTextEditor?.options.tabSize as number ?? 4,
             export: !!configuration.export,
+            outputType: allowedOrDefault(configuration.outputType, outputTypes),
             convertDatesTo: allowedOrDefault(configuration.convertDatesTo, dateOutputTypes),
             convertNullablesTo: allowedOrDefault(configuration.convertNullablesTo, nullableOutputTypes),
             toCamelCase: !!configuration.toCamelCase,

@@ -73,7 +73,7 @@ Last updated: 2026-04-26
 | #65 | Is there an option to enable convert methods? | Open | [ ] | [ ] | |
 | #64 | String enums for the command line interface | Open | [ ] | [ ] | |
 | #63 | Fixed string to constant | 🟢 Passes | [x] | [x] | Outputs as literal types |
-| #62 | Output type "type" instead of interface | Open | [ ] | [ ] | |
+| #62 | Output type "type" instead of interface | 🟢 Passes | [x] | [x] | |
 | #58 | Required keyword in property declarations fails | 🟢 Passes | [x] | [x] | Fixed previously via C# 12 Roslyn upgrade |
 | #49 | Property Name Not Match CamelCase | 🟢 Passes | [x] | [x] | Full acronym support using standard logic |
 | #48 | DateOnly not converting to string | 🟢 Passes | [x] | [x] | Fixed previously |

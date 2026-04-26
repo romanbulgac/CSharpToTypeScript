@@ -109,6 +109,16 @@
 						"default": true,
 						"description": "Add \"export\" keyword to emitted type."
 					},
+					"csharpToTypeScript.outputType": {
+						"type": "string",
+						"default": "interface",
+						"enum": [
+							"interface",
+							"class",
+							"type"
+						],
+						"description": "Sets output type for models."
+					},
 					"csharpToTypeScript.convertDatesTo": {
 						"type": "string",
 						"default": "string",

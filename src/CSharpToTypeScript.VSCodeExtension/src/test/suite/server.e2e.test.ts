@@ -8,6 +8,7 @@ type FixtureCommand = 'replace' | 'toFile';
 
 type ConversionSettings = Partial<{
     export: boolean;
+    outputType: 'interface' | 'class' | 'type';
     convertDatesTo: 'string' | 'date' | 'union';
     convertNullablesTo: 'null' | 'undefined';
     toCamelCase: boolean;
@@ -40,6 +41,7 @@ interface ServerInput {
     useTabs: boolean;
     tabSize: number;
     export: boolean;
+    outputType: 'interface' | 'class' | 'type';
     convertDatesTo: 'string' | 'date' | 'union';
     convertNullablesTo: 'null' | 'undefined';
     toCamelCase: boolean;
@@ -125,6 +127,7 @@ function buildServerInput(code: string, fileName: string | undefined, settings: 
         useTabs: false,
         tabSize: 4,
         export: true,
+        outputType: 'interface',
         convertDatesTo: 'string',
         convertNullablesTo: 'null',
         toCamelCase: true,
