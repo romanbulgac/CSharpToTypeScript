@@ -36,7 +36,8 @@ namespace CSharpToTypeScript.Core.Services
                 baseTypes: ConvertBaseTypes(
                     type.BaseList?.Types ?? Enumerable.Empty<BaseTypeSyntax>(),
                     type),
-                fromInterface: type is InterfaceDeclarationSyntax);
+                fromInterface: type is InterfaceDeclarationSyntax,
+                documentation: DocumentationHelper.GetSummary(type));
 
         private FieldNode ConvertProperty(PropertyDeclarationSyntax property, TypeDeclarationSyntax containingType)
         {
@@ -48,7 +49,8 @@ namespace CSharpToTypeScript.Core.Services
             return new FieldNode(
                 name: property.Identifier.ValueText,
                 type: typeNode,
-                jsonPropertyName: GetJsonPropertyName(property));
+                jsonPropertyName: GetJsonPropertyName(property),
+                documentation: DocumentationHelper.GetSummary(property));
         }
 
         private string GetLiteralValue(PropertyDeclarationSyntax property, TypeDeclarationSyntax containingType)
@@ -83,7 +85,8 @@ namespace CSharpToTypeScript.Core.Services
                return new FieldNode(
                    name: v.Identifier.ValueText,
                    type: typeNode,
-                   jsonPropertyName: GetJsonPropertyName(field));
+                   jsonPropertyName: GetJsonPropertyName(field),
+                   documentation: DocumentationHelper.GetSummary(field));
            })
            .Where(f => !string.IsNullOrWhiteSpace(f.Name));
 

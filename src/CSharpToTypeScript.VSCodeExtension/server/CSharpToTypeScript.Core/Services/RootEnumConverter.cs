@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using CSharpToTypeScript.Core.Models;
+using CSharpToTypeScript.Core.Utilities;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CSharpToTypeScript.Core.Services
@@ -10,7 +11,8 @@ namespace CSharpToTypeScript.Core.Services
         public RootEnumNode Convert(EnumDeclarationSyntax @enum)
             => new RootEnumNode(
                 name: @enum.Identifier.ValueText,
-                members: ConvertEnumMembers(@enum.Members));
+                members: ConvertEnumMembers(@enum.Members),
+                documentation: DocumentationHelper.GetSummary(@enum));
 
         private IEnumerable<EnumMemberNode> ConvertEnumMembers(IEnumerable<EnumMemberDeclarationSyntax> members)
         {
@@ -36,8 +38,7 @@ namespace CSharpToTypeScript.Core.Services
                     value = nextValue?.ToString();
                     if (nextValue.HasValue) nextValue++;
                 }
-
-                result.Add(new EnumMemberNode(m.Identifier.ValueText, value));
+                result.Add(new EnumMemberNode(m.Identifier.ValueText, value, DocumentationHelper.GetSummary(m)));
             }
             return result;
         }

@@ -80,7 +80,7 @@ Last updated: 2026-04-26
 | #45 | CLI tool improperly recognizing directories | Open | [ ] | [ ] | Out of extension scope unless shared core behavior |
 | #44 | Multiple directories/files support | Open | [ ] | [ ] | Out of extension scope unless shared core behavior |
 | #39 | Output file name begin with capital letter | Open | [ ] | [ ] | |
-| #38 | Summary tag support | Open | [ ] | [ ] | |
+| #38 | Summary tag support | 🟢 Passes | [x] | [x] | Converts to JSDoc comments |
 | #37 | Some Chinese characters trigger error | Open | [ ] | [ ] | |
 | #34 | `using` aliases | 🟢 Passes | [ ] | [ ] | |
 | `DateOnly` / `TimeOnly` | `dateonly-timeonly` | 🟢 Passes | [ ] | [ ] | |
@@ -92,7 +92,7 @@ Last updated: 2026-04-26
 | #24 | Nullable for non-primitive fields | Open | [ ] | [ ] | |
 | #19 | Support dotnet 5 | Open | [x] | [x] | Migrated further to net8 |
 | #13 | Using variable name as TypeScript comment | 🟢 Passes | [x] | [x] | |
-| #5 | Generate one class/interface/enum per file | Open | [ ] | [ ] | |
+| #5 | Generate one class/interface/enum per file | 🟢 Passes | [x] | [x] | Implemented via exportOneFilePerType |
 
 ## Session Log
 

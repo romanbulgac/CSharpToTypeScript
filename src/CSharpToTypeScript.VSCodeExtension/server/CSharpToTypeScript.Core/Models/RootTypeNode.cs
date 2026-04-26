@@ -11,13 +11,14 @@ namespace CSharpToTypeScript.Core.Models
     internal class RootTypeNode : RootNode
     {
         public RootTypeNode(string name, IEnumerable<FieldNode> fields, IEnumerable<string> genericTypeParameters,
-            IEnumerable<TypeNode> baseTypes, bool fromInterface)
+            IEnumerable<TypeNode> baseTypes, bool fromInterface, IEnumerable<string> documentation = null)
         {
             Name = name;
             Fields = fields;
             GenericTypeParameters = genericTypeParameters;
             BaseTypes = baseTypes;
             FromInterface = fromInterface;
+            Documentation = documentation ?? Enumerable.Empty<string>();
         }
 
         public override string Name { get; }
@@ -25,6 +26,7 @@ namespace CSharpToTypeScript.Core.Models
         public IEnumerable<string> GenericTypeParameters { get; }
         public IEnumerable<TypeNode> BaseTypes { get; }
         public bool FromInterface { get; }
+        public IEnumerable<string> Documentation { get; }
 
         public override IEnumerable<string> Requires
             => Fields.SelectMany(f => f.Requires)
@@ -39,7 +41,25 @@ namespace CSharpToTypeScript.Core.Models
 
             string typeWord = options.OutputType == OutputType.Type ? "type" : (!FromInterface && options.OutputType == OutputType.Class ? "class" : "interface");
 
-            string declaration = "export ".If(options.Export)
+            string docPrefix = "";
+            if (Documentation.Any())
+            {
+                if (Documentation.Count() == 1)
+                {
+                    docPrefix = $"/** {Documentation.First()} */" + NewLine;
+                }
+                else
+                {
+                    docPrefix = "/**" + NewLine;
+                    foreach (var line in Documentation)
+                    {
+                        docPrefix += $" * {line}" + NewLine;
+                    }
+                    docPrefix += " */" + NewLine;
+                }
+            }
+
+            string declaration = docPrefix + "export ".If(options.Export)
                 + typeWord + " "
                 + Name.TransformIf(options.RemoveInterfacePrefix, StringUtilities.RemoveInterfacePrefix)
                 + ("<" + GenericTypeParameters.ToCommaSepratedList() + ">").If(GenericTypeParameters.Any());
