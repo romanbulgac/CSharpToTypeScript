@@ -208,7 +208,7 @@
 		"watch": "tsc -watch -p ./",
 		"pretest": "npm run compile-server && npm run compile",
 		"test": "npm run test:server-e2e",
-		"test:server-e2e": "mocha --timeout 120000 out/test/suite/server.e2e.test.js",
+		"test:server-e2e": "mocha --ui tdd --timeout 120000 out/test/suite/server.e2e.test.js",
 		"test:extension": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
